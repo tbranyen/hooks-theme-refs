@@ -1,0 +1,9 @@
+{
+  "name": "hooks-theme-refs",
+  "version": "0.2.0",
+  "description": "Sets defaults for Hooks, Themes, & Refs",
+  "main": "index.js",
+  "keywords": ["hooks", "themes", "refs", "react"],
+  "author": "Tim Branyen",
+  "license": "MIT"
+}
