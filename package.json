@@ -2,8 +2,20 @@
   "name": "hooks-theme-refs",
   "version": "0.2.0",
   "description": "Sets defaults for Hooks, Themes, & Refs",
-  "main": "index.js",
-  "keywords": ["hooks", "themes", "refs", "react"],
+  "main": "dist/htr.js",
+  "keywords": [
+    "hooks",
+    "themes",
+    "refs",
+    "react"
+  ],
   "author": "Tim Branyen",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-preset-env": "^1.5.1"
+  },
+  "scripts": {
+    "build": "babel index.js -o dist/htr.js"
+  }
 }

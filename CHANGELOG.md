@@ -1,3 +1,7 @@
+# 0.3.0
+
+- Transpile using babel-cli and babel-preset-env
+
 # 0.2.0
 
 - Removed lodash dependency, too heavy, in favor of a smaller replacement
