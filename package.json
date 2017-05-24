@@ -1,6 +1,6 @@
 {
   "name": "hooks-theme-refs",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Sets defaults for Hooks, Themes, & Refs",
   "main": "dist/htr.js",
   "keywords": [
