@@ -26,23 +26,24 @@ var defaultsDeep = function defaultsDeep() {
 
 module.exports = function (instance) {
   var constructor = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : instance.constructor;
-  var _constructor$defaultP = constructor.defaultProps,
-      hooks = _constructor$defaultP.hooks,
-      theme = _constructor$defaultP.theme,
-      refs = _constructor$defaultP.refs;
+
+  var _ref = constructor.defaultProps || {},
+      hooks = _ref.hooks,
+      theme = _ref.theme,
+      refs = _ref.refs;
 
   var props = Object.assign({}, instance.props);
 
   if (hooks) {
-    props.hooks = defaultsDeep(props.hooks, hooks);
+    props.hooks = defaultsDeep({}, props.hooks, hooks);
   }
 
   if (theme) {
-    props.theme = defaultsDeep(props.theme, theme);
+    props.theme = defaultsDeep({}, props.theme, theme);
   }
 
   if (refs) {
-    props.refs = defaultsDeep(props.refs, refs);
+    props.refs = defaultsDeep({}, props.refs, refs);
   }
 
   return props;

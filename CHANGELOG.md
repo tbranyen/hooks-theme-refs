@@ -1,3 +1,11 @@
+# 0.5.0
+
+- Don't break if no `defaultProps` are defined
+
+# 0.4.0
+
+- Publish new version to fix checksum issues in regsitry
+
 # 0.3.0
 
 - Transpile using babel-cli and babel-preset-env
