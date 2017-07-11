@@ -17,7 +17,7 @@ const defaultsDeep = (...merge) => merge.slice(1).reduce((merged, props) => {
 }, merge[0] || {});
 
 module.exports = (instance, constructor=instance.constructor) => {
-  const { hooks, theme, refs } = (constructor.defaultProps || {});
+  const { hooks, theme, refs, options } = (constructor.defaultProps || {});
   const props = Object.assign({}, instance.props);
 
   if (hooks) {
@@ -30,6 +30,10 @@ module.exports = (instance, constructor=instance.constructor) => {
 
   if (refs) {
     props.refs = defaultsDeep({}, props.refs, refs);
+  }
+
+  if (options) {
+    props.options = defaultsDeep({}, props.options, options);
   }
 
   return props;
