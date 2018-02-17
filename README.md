@@ -66,6 +66,32 @@ A good rule of thumb with React components is to assume your consumer knows
 what they are passing to the component and forward that prop into the
 component. This allows any DOM event or property to be set easily.
 
+### Deep merging other props
+
+By default htr focuses on hooks, theme, and refs. These are common to all well
+structured components. But your component may want to deep merge other keys,
+such as `options`. You can do this at a local or global level. For applications
+it may preferable to set once. For one off cases per Component, use the local
+approach.
+
+#### Local
+
+To locally merge a specific key, pass a list of keys as the second argument
+to the `htr` function.
+
+``` js
+const { options } = htr(this, ['options']);
+```
+
+To globally set keys:
+
+``` js
+htr.props.add('options');
+
+// Anytime `htr` is called it will automatically deep merge `options`.
+const { options } = htr(this);
+```
+
 ## API
 
 `htr(instance, extra, constructor)` 
