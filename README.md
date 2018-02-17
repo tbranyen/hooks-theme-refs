@@ -1,148 +1,212 @@
-# hooks-themes-refs
+# Hooks, Theme, and Refs
 
-This library is designed to help provide a simple, cohesive pattern for passing properties from 'application code' to 'shared library code' in React components.
+[![Build Status](https://travis-ci.org/tbranyen/hooks-theme-refs.svg?branch=master)](https://travis-ci.org/tbranyen/hooks-theme-refs)
+
+This single function module is used in React components for deep merging
+specific property keys. This creates a simple, choesive pattern for passing
+props from "application code" to "shared library code".
 
 ## Quick Start
 
-You can use `hooks-themes-refs` to organize specific areas of your library props into
-more cohesive sections, with automatically managed defaults merging. Here's how:
+First install in your project:
 
 ```
 npm install hooks-themes-refs
 ```
 
+Example of traditional usage:
+
 ```jsx
-import React from 'react';
+import React, { Component } from 'react';
+import htr from 'htr';
 
-export default class LibComponent extends React.Component {
+class SimpleComponent extends Component {
   render() {
-    const {hooks, themes, refs} = props;
+    const { hooks, theme, status, label, ...rest } = htr(this);
 
-    return <div className={themes.wrapper} onClick={hooks.onClick}>
-      <i className={themes.iconClass} ref={refs.iconRef} />
-    </div>;
+    return (
+      <div className={theme.simple} onClick={hooks.onClick} {...rest}>
+        <i className={theme.icons[status]} />
+        <span className={theme.label}>{label}</span>
+      </div>
+    );
   }
 
-  defaultProps = {
+  static defaultProps = {
     hooks: {
       onClick() {},
     },
-    themes: {
-      wrapper: 'wrapper-default-class',
-      iconClass: 'icon-default-class',
+
+    theme: {
+      simple: 'simple-component',
+      label: 'simple-component-label,
+
+      icons: {
+        default: 'simple-component-icons-default',
+        info: 'simple-component-icons-info',
+      },
     },
-    refs: {
-      iconRef() {},
-    }
   }
-};
+}
 ```
 
-## Hooks, Themes, Refs
+### When to use refs
 
-We organize props in to common major sections to help alleviate prop surface area and ease
-of cohesion. Each section represents an area frequently used in the customization & usage
-of a component and its internals:
+You will notice that `refs` are omitted from this component. As a rule `refs`
+are only added for required use cases. For instance, a video component should
+expose a way to get access to the video element. Wrapping HTML Form elements
+should expose a way to get access to the internals. Use good judgement, don't
+add a `refs` section for the sake of it.
+
+### Spread
+
+A good rule of thumb with React components is to assume your consumer knows
+what they are passing to the component and forward that prop into the
+component. This allows any DOM event or property to be set easily.
+
+## API
+
+`htr(instance, extra, constructor)` 
+
+- **Required** A React component instance
+- **Optional** An array of extra property names to deep merge
+- **Optional** The constructor (or plain object) to reference `defaultProps` from
+
+`htr.props`
+
+A global Set of whitelisted property keys. For instance you can whitelist
+`options` to be deep merged: `htr.props.add('options')`.
+
+## Props
+
+Props are organized into whitelisted keys that are specific to React
+components to reduce the amount of top level props. Each prop represents a
+part of well structured component.
 
 ### Hooks
-This is used for callback functions that may have defaults, but are also useful to allow
-a parent to pass a function in to capture events, or receive data from.
 
-### Themes
-This is used to allow customization of classes or styles for internals. This helps prevent
-app developers from having to use CSS specificity to override styles, as they can provide
-their own classNames or styles directly on to sections of the component.
+Are callback functions that are used by the component. They can be DOM events,
+but are not limited to that. You can pass to other libraries, use in your
+own logic, receive web socket events, etc.
+
+If your component makes sense without the event, then do not set a default.
+This will allow the end user to disable any internal bound events, by passing
+a falsy value.
+
+### Theme
+
+This is used to allow customization of classes or styles for internals. This
+helps prevent app developers from having to use CSS specificity to override
+styles, as they can provide their own classNames or styles directly on to
+sections of the component. They are compatible with CSS Modules and most
+theming providers.
 
 ### Refs
-This is useful when a parent may need an actual reference callback to the DOM node, for
-example a `<video/>` element so that it can perform additional operations or manipulation
-on if necessary.
 
+This is useful when a parent may need an actual reference callback to the DOM
+node, for example a `<video />` element so that it can perform additional
+operations or manipulation if necessary.
 
-## What's this useful for?
+## How this helps
 
-Frequently, 3rd party components need to have input & customization tweaks from applications using them. These are often defined in the props that any component might accept, for example:
+Frequently, 3rd party components need to have input & customization tweaks from
+applications using them. These are often defined in the props that any
+component might accept, for example:
 
 ```jsx
 <Button onClick={appCallback} iconClass="search" />
 ```
 
-This can get a bit trickier when components have a lot of internal sub-elements in
-their render methods. Imagine a `render()` method something like this:
+This can get a bit trickier when components have a lot of internal sub-elements
+in their render methods. Imagine a `render()` method something like this:
 
 ```jsx
-render() {
-  const {iconClass, wrapperClass, showFilterClass, listItemsClass, listItemClass} = this.props;
-  const {onFilterClick, handleListClick} = this.props;
-  const {listRefFn} = this.props;
+class DefaultComponent extends Component {
+  render() {
+    const { icon, wrapper, showFilter, listItems, listItem } = this.props;
+    const { onFilterClick, handleListClick } = this.props;
+    const { listRefFn } = this.props;
 
-  return <div className={wrapperClass}>
-    <i className={iconClass}/>
+    return (
+      <div className={wrapperClass}>
+        <i className={iconClass}/>
 
-    <button className={showFilterClass} onClick={onFilterClick}>
-      Filter List
-    </button>
+        <button className={showFilterClass} onClick={onFilterClick}>
+          Filter List
+        </button>
 
-    <div className={listItemsClass} onClick={handleListClick} ref={listRefFn}>
-      <span className={listItemClass}>Item 1</span>
-      <span className={listItemClass}>Item 2</span>
-      <span className={listItemClass}>Item 3</span>
-    </div>
-  </div>;
-}
+        <div className={listItemsClass} onClick={handleListClick} ref={listRefFn}>
+          <span className={listItemClass}>Item 1</span>
+          <span className={listItemClass}>Item 2</span>
+          <span className={listItemClass}>Item 3</span>
+        </div>
+      </div>
+    );
+  }
 
-defaultProps = {
-  wrapperClass: 'default-wrapper',
-  iconClass: 'default-icon',
-  listItemsClass: 'list-items-wrapper',
-  listItemClass: 'list-item',
-  showFilterClass: 'show-filter-button',
-  onFilterClick() {},
-  handleListClick() {},
-  listRefFn() {},
-}
-```
-
-While a bit contrived, you can see that in order to allow users to not have to
-_override_ classes and customize click behavior, the surface area of the props
-has started to increase. As the complexity or number of areas to control increase,
-`hooks-themes-refs` aims to help organize and clean these props up for both
-library authors _and_ library consumers. Here's what the above example would
-look like after refactoring it to this pattern:
-
-```jsx
-render() {
-  const {theme, hooks} = htr(this);
-
-  return <div className={theme.wrapperClass}>
-    <i className={theme.iconClass}/>
-
-    <button className={theme.showFilterClass} onClick={hooks.onFilterClick}>
-      Filter List
-    </button>
-
-    <div className={theme.listItemsClass} onClick={hooks.handleListClick} ref={refs.listRefFn}>
-      <span className={theme.listItemClass}>Item 1</span>
-      <span className={theme.listItemClass}>Item 2</span>
-      <span className={theme.listItemClass}>Item 3</span>
-    </div>
-  </div>;
-}
-
-defaultProps = {
-  theme: {
+  static defaultProps = {
     wrapperClass: 'default-wrapper',
     iconClass: 'default-icon',
     listItemsClass: 'list-items-wrapper',
     listItemClass: 'list-item',
     showFilterClass: 'show-filter-button',
-  },
-  hooks: {
     onFilterClick() {},
     handleListClick() {},
-  },
-  refs: {
     listRefFn() {},
   }
 }
 ```
+
+While contrived, you can see that in order to allow users to not have to
+_override_ classes and customize click behavior, the surface area of the props
+has started to increase. As the complexity or number of areas to control
+increase, `hooks-themes-refs` aims to help organize and clean these props up
+for both library authors _and_ library consumers. Here's what the above example
+would look like after refactoring it to this pattern:
+
+```jsx
+class DefaultComponent extends Component {
+  render() {
+    const { hooks, theme, refs, ...rest } = htr(this);
+
+    return (
+      <div className={theme.wrapper} {...rest}>
+        <i className={theme.icon} />
+
+        <button className={theme.showFilter} onClick={hooks.onFilterClick}>
+          Filter List
+        </button>
+
+        <div className={theme.listItems} onClick={hooks.handleListClick} ref={refs.list}>
+          <span className={theme.listItem}>Item 1</span>
+          <span className={theme.listItem}>Item 2</span>
+          <span className={theme.listItem}>Item 3</span>
+        </div>
+      </div>
+    );
+  }
+
+  static defaultProps = {
+    hooks: {
+      onFilterClick() {},
+      handleListClick() {},
+    },
+
+    theme: {
+      wrapper: 'default-wrapper',
+      icon: 'default-icon',
+      listItems: 'list-items-wrapper',
+      listItem: 'list-item',
+      showFilter: 'show-filter-button',
+    },
+
+    refs: {
+      list() {},
+    },
+  }
+}
+```
+
+## License
+
+MIT 2018

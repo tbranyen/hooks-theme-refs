@@ -1,5 +1,6 @@
 const { deepEqual } = require('assert');
 const htr = require('../index');
+const Core = require('css-modules-loader-core');
 
 describe('Hooks Theme Refs', function() {
   beforeEach(() => {
@@ -80,5 +81,44 @@ describe('Hooks Theme Refs', function() {
     const actual = new Component().render();
 
     deepEqual(actual, { options: { a: 1, b: 2 } });
+  });
+
+  it('can work with css modules', async () => {
+    const core = new Core();
+
+    // Simulate import a CSS Modules file.
+    const { exportTokens } = await core.load(`
+      .simple {}
+      .simple-test {}
+    `, 'test');
+
+    const theme = exportTokens;
+
+    class Component {
+      render() {
+        return htr(this);
+      }
+
+      constructor(props) {
+        this.props = props;
+      }
+    }
+
+    Component.defaultProps = { theme };
+
+    const component = new Component({
+      theme: {
+        simple: 'override-simple',
+      },
+    });
+
+    const actual = component.render();
+
+    deepEqual(actual, {
+      theme: {
+        simple: 'override-simple',
+        'simple-test': '_test__simple-test',
+      },
+    });
   });
 });
