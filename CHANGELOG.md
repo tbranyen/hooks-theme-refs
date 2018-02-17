@@ -1,3 +1,8 @@
+# 1.0.0
+
+- Allows local and global prop keys to deep merge
+- Changes HTR signature if passing an instance
+
 # 0.5.0
 
 - Don't break if no `defaultProps` are defined
