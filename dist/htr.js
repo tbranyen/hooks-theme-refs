@@ -2,6 +2,15 @@
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+var keys = Object.keys,
+    assign = Object.assign;
+var isArray = Array.isArray;
+
+// Inlined the `defaultsDeep` function since it's so small and to avoid direct
+// dependencies.
+
 var defaultsDeep = function defaultsDeep() {
   for (var _len = arguments.length, merge = Array(_len), _key = 0; _key < _len; _key++) {
     merge[_key] = arguments[_key];
@@ -10,8 +19,8 @@ var defaultsDeep = function defaultsDeep() {
   return merge.slice(1).reduce(function (merged, props) {
     props = props && (typeof props === 'undefined' ? 'undefined' : _typeof(props)) === 'object' ? props : {};
 
-    Object.keys(props).forEach(function (propName) {
-      if (Array.isArray(merged[propName])) {
+    keys(props).forEach(function (propName) {
+      if (isArray(merged[propName])) {
         merged[propName] = defaultsDeep([], merged[propName], props[propName]);
       } else if (_typeof(merged[propName]) === 'object') {
         merged[propName] = defaultsDeep({}, merged[propName], props[propName]);
@@ -24,31 +33,36 @@ var defaultsDeep = function defaultsDeep() {
   }, merge[0] || {});
 };
 
-module.exports = function (instance) {
-  var constructor = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : instance.constructor;
+// These props will never change since it's the name of the module.
+var hardcoded = ['hooks', 'theme', 'refs'];
 
-  var _ref = constructor.defaultProps || {},
-      hooks = _ref.hooks,
-      theme = _ref.theme,
-      refs = _ref.refs;
+// Main HTR function that processes the keys to deep default.
+var htr = function htr(instance) {
+  var localKeys = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+  var constructor = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : instance.constructor;
 
-  var props = Object.assign({}, instance.props);
+  var propKeys = new Set([].concat(hardcoded, _toConsumableArray(htr.props), _toConsumableArray(localKeys)));
+  var _constructor$defaultP = constructor.defaultProps,
+      defaultProps = _constructor$defaultP === undefined ? {} : _constructor$defaultP;
 
-  if (hooks) {
-    props.hooks = defaultsDeep({}, props.hooks, hooks);
-  }
+  var props = assign({}, instance.props);
 
-  if (theme) {
-    props.theme = defaultsDeep({}, props.theme, theme);
-  }
+  propKeys.forEach(function (key) {
+    var value = defaultProps[key];
 
-  if (refs) {
-    props.refs = defaultsDeep({}, props.refs, refs);
-  }
+    if (value) {
+      props[key] = defaultsDeep({}, props[key], value);
+    }
+  });
 
   return props;
 };
 
 // Allow for: const { htr, defaultsDeep } = require('htr');
-module.exports.htr = module.exports;
-module.exports.defaultsDeep = defaultsDeep;
+htr.htr = htr;
+htr.defaultsDeep = defaultsDeep;
+
+// This Set allows customizing the props that htr seeks for.
+htr.props = new Set();
+
+module.exports = htr;
