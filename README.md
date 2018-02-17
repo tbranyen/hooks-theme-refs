@@ -2,6 +2,8 @@
 
 [![Build Status](https://travis-ci.org/tbranyen/hooks-theme-refs.svg?branch=master)](https://travis-ci.org/tbranyen/hooks-theme-refs)
 
+**Stable Version** 1.0.0
+
 This single function module is used in React components for deep merging
 specific property keys. This creates a simple, choesive pattern for passing
 props from "application code" to "shared library code".
@@ -11,7 +13,7 @@ props from "application code" to "shared library code".
 First install in your project:
 
 ```
-npm install hooks-themes-refs
+npm install hooks-theme-refs
 ```
 
 Example of traditional usage:
