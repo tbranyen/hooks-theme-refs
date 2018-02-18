@@ -41,7 +41,7 @@ class SimpleComponent extends Component {
 
     theme: {
       simple: 'simple-component',
-      label: 'simple-component-label,
+      label: 'simple-component-label',
 
       icons: {
         default: 'simple-component-icons-default',
@@ -117,7 +117,9 @@ to the `htr` function.
 const { options } = htr(this, ['options']);
 ```
 
-To globally set keys:
+#### Global
+
+To set keys names globally, add them to the `props` set.
 
 ``` js
 htr.props.add('options');
