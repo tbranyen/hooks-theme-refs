@@ -20,7 +20,7 @@ Example of traditional usage:
 
 ```jsx
 import React, { Component } from 'react';
-import htr from 'htr';
+import htr from 'hooks-theme-refs';
 
 class SimpleComponent extends Component {
   render() {
