@@ -27,8 +27,8 @@ class SimpleComponent extends Component {
     const { hooks, theme, status, label, ...rest } = htr(this);
 
     return (
-      <div className={theme.simple} onClick={hooks.onClick} {...rest}>
-        <i className={theme.icons[status]} />
+      <div className={theme.simple} {...rest}>
+        <i className={theme.icons[status]} onClick={hooks.onStatusClick} />
         <span className={theme.label}>{label}</span>
       </div>
     );
@@ -36,7 +36,7 @@ class SimpleComponent extends Component {
 
   static defaultProps = {
     hooks: {
-      onClick() {},
+      onStatusClick() {},
     },
 
     theme: {
@@ -49,6 +49,40 @@ class SimpleComponent extends Component {
       },
     },
   }
+}
+```
+
+### Examples of consuming this Component
+
+Overriding an icon:
+
+```jsx
+function render() {
+  return (
+    <SimpleComponent theme={{ icons: { info: 'new-info-icon' } }} />
+  );
+}
+```
+
+Clicking the status icon:
+
+```jsx
+function render() {
+  return (
+    <SimpleComponent hooks={{ onStatusClick(ev) {} }} />
+  );
+}
+```
+
+Applying a CSS Module to theme the Component:
+
+```jsx
+import theme from './styles.css';
+
+function render() {
+  return (
+    <SimpleComponent theme={theme} />
+  );
 }
 ```
 
